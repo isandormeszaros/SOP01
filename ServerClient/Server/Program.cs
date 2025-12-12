@@ -7,6 +7,7 @@ using System.Net;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Runtime.CompilerServices;
 
 namespace Server
 {
@@ -21,36 +22,31 @@ namespace Server
 
         static void Main(string[] args)
         {
+
             // Kidolgozandó
             Controller.LoadControllers(controllersFile);
             Probe.LoadProbes(probesFile);
 
-            Console.WriteLine($"Loaded {Controller.controllers.Count} controllers and {Probe.probes.Count} probes.");
-
-            IPAddress ip = IPAddress.Parse(ConfigurationManager.AppSettings["ip"]);
-            Console.WriteLine("IP raw: " + ConfigurationManager.AppSettings["ip"]);
-
-            int port = int.Parse(ConfigurationManager.AppSettings["port"]);
-
-            Console.WriteLine($"Starting server on {ip}:{port} ...");
+            IPAddress ip = IPAddress.Parse(ConfigurationManager.AppSettings["ip"].ToString());
+            int port = int.Parse(ConfigurationManager.AppSettings["port"].ToString());
 
             server = new TcpListener(ip, port);
             server.Start();
 
             new Thread(WaitForClients).Start();
 
-            Console.WriteLine("Server is running. Press ENTER to shut down...");
-
+            Console.WriteLine("Press enter to shut down the server...");
             Console.ReadLine();
 
+            // Kidolgozandó
             listen = false;
-            Controll.KillAllControlls(); 
+            Controll.KillAllControlls();
             server.Stop();
 
+
+            //mentés
             Controller.SaveControllers(controllersFile);
             Probe.SaveProbes(probesFile);
-
-            Console.WriteLine("Server stopped.");
 
         }
 
@@ -60,14 +56,9 @@ namespace Server
             {
                 if (server.Pending())
                 {
+                    // Kidolgozandó
                     TcpClient client = server.AcceptTcpClient();
-                    Console.WriteLine("Client connected.");
-
                     new Controll(client);
-                }
-                else
-                {
-                    Thread.Sleep(20);
                 }
             }
         }

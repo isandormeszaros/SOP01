@@ -3,6 +3,8 @@ using System.CodeDom;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.ExceptionServices;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
@@ -16,7 +18,6 @@ namespace Server
         string pId;
         public static List<Controller> controllers = new List<Controller>();
 
-        // Kidolgozandó
         private Controller(string id, string passcode, string pId)
         {
             this.id = id;
@@ -24,77 +25,72 @@ namespace Server
             this.pId = pId;
         }
 
-        private Controller(string passcode)
+        // Kidolgozandó
+        private Controller()
         {
-            Probe probe = new Probe(); 
-            this.id = probe.Cid;       
-            this.passcode = passcode;
-            this.pId = probe.Id;      
+
         }
 
         public string Id { get => id; set => id = value; }
         public string Passcode { get => passcode; set => passcode = value; }
         public string PId { get => pId; set => pId = value; }
 
-        public static Controller TryEnable(string id, string passcode)
+        public static Controller TryEnable(string loginId, string loginPass)
+        {
+
+            // Kidolgozandó
+            return controllers.FirstOrDefault(c => c.Id == loginId && c.Passcode == loginPass);
+
+        }
+        public static bool TryCreate()
         {
             // Kidolgozandó
-            return controllers.Find(c => c.Id == id && c.Passcode == passcode);
-        }
-        public static bool TryCreate(string passcode, out string id)
-        {
-            Controller c = new Controller(passcode);
-            controllers.Add(c);
-            id = c.id;
-            return true;
+            return false;
         }
 
         public static void LoadControllers(string fileName)
         {
             // Kidolgozandó
+            // Controller(string id, string passcode, string pId)
+            // < controller id = "C-156459" passcode = "pass3" pid = "P-156459-S" />
             controllers.Clear();
-
-            if (!File.Exists(fileName))
+            if (File.Exists(fileName))
             {
-                Console.WriteLine("Kontroller fájl nem található...");
-                return;
+                XDocument xml = XDocument.Load(fileName);
+
+                foreach (XElement controller in xml.Descendants("controller"))
+                {
+                    Controller c = new Controller(
+                        (string)controller.Attribute("id"),
+                        (string)controller.Attribute("passcode"),
+                        (string)controller.Attribute("pid")
+                    );
+                    controllers.Add(c);
+                }
+
+                Console.WriteLine("Kontrollerek sikeresen betöltve");
             }
+            else Console.WriteLine("Nem található Kontroller!");
 
-            XDocument xml = XDocument.Load(fileName);
 
-            foreach (XElement ctrl in xml.Descendants("controller"))
-            {
-                Controller c = new Controller(
-                    (string)ctrl.Attribute("id"),
-                    (string)ctrl.Attribute("passcode"),
-                    (string)ctrl.Attribute("pid")
-                );
-                controllers.Add(c);
-            }
-
-            Console.WriteLine("Kontrollerek sikeresen beolvasva.");
         }
 
         public static void SaveControllers(string fileName)
         {
             // Kidolgozandó
             XElement root = new XElement("controllers");
-
             foreach (var c in controllers)
             {
                 root.Add(
-                    new XElement("controller",
-                        new XAttribute("id", c.Id),
-                        new XAttribute("passcode", c.Passcode),
-                        new XAttribute("pid", c.PId)
-                    )
+                new XElement("controller",
+                new XAttribute((XName)"id", c.Id),
+                new XAttribute((XName)"passcode", c.Passcode),
+                new XAttribute((XName)"pid", c.PId))    
                 );
             }
-
             XDocument xml = new XDocument(root);
             xml.Save(fileName);
-
-            Console.WriteLine("Kontrollerek sikeresen elmentve.");
+            Console.WriteLine("Kontroller sikeresen elmentve");
         }
     }
 }

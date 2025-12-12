@@ -1,0 +1,12 @@
+<accounts>
+    <account number="HUF-00008812" owner="Herbák Marcell" balance="6767" type="VIP"/>
+    <account number="HUF-00019923" owner="Nagy Péter" balance="25000" type="VIP"/>
+    <account number="HUF-00021234" owner="Szabó Éva" balance="5400000" type="VIP"/>
+    <account number="HUF-00034567" owner="Tóth Gábor" balance="3200" type="Normal"/>
+    <account number="HUF-00049876" owner="Horváth Júlia" balance="89000" type="Normal"/>
+    <account number="HUF-00051122" owner="Király Sándor" balance="4286945" type="VIP"/>
+    <account number="HUF-00065432" owner="Kiss Zsuzsanna" balance="45000" type="Normal"/>
+    <account number="HUF-00078901" owner="Molnár László" balance="980000" type="VIP"/>
+    <account number="HUF-00087654" owner="Farkas Dóra" balance="1500" type="Normal"/>
+    <account number="HUF-00092345" owner="Balogh István" balance="350000" type="VIP"/>
+</accounts>
